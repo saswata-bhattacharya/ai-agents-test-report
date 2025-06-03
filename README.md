@@ -17,7 +17,7 @@ The primary purpose of this interactive report is to:
 
 ## How to View the Report
 
-To view the report, simply open the link `https://saswata-bhattacharya.github.io/ai-agents-test-report/` file in your web browser. No special setup or server is required as it is a self-contained HTML file.
+To view the report, simply open the link [https://saswata-bhattacharya.github.io/ai-agents-test-report] file in your web browser. No special setup or server is required as it is a self-contained HTML file.
 
 
 ## Report Sections
