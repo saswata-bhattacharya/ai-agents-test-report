@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Agent QA Report | ICSA v1.2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #2c3e50;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #4DB6AC;
+            color: #4DB6AC;
+            font-weight: 600;
+        }
+        .kpi-card {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .risk-card.high { border-left: 5px solid #d32f2f; }
+        .risk-card.medium { border-left: 5px solid #f59e0b; }
+        .risk-card.low { border-left: 5px solid #3b82f6; }
+        .signoff-conditional { background-color: #fef9c3; }
+        .signoff-approved { background-color: #dcfce7; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">AI Agent QA Test Report</h1>
+            <p class="text-lg text-gray-600 mt-2">Intelligent Customer Support Agent (ICSA) - Release 1.2.0</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-300 mb-8 flex-wrap">
+            <button class="nav-button active py-4 px-6 text-sm md:text-base" data-tab="dashboard">Dashboard</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" data-tab="execution">Execution Deep Dive</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" data-tab="performance">Performance & AI</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" data-tab="defects">Defects & Risks</button>
+            <button class="nav-button py-4 px-6 text-sm md:text-base" data-tab="signoff">Sign-off & Findings</button>
+        </nav>
+
+        <main>
+            <section id="dashboard" class="tab-content active">
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Overall Recommendation</h2>
+                    <div class="mt-4 text-center text-3xl font-bold text-green-600 bg-green-50 p-6 rounded-lg">
+                        GO FOR PRODUCTION DEPLOYMENT
+                    </div>
+                    <p class="text-gray-600 mt-4 text-center max-w-3xl mx-auto">
+                        This section provides the high-level quality status, key findings, and final go/no-go recommendation. Based on comprehensive QA activities, ICSA Release 1.2.0 is formally recommended for production deployment, having met all critical quality gates and acceptance criteria.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="kpi-card p-6 text-center">
+                        <div class="text-5xl font-bold text-teal-600">93.8%</div>
+                        <div class="text-gray-600 font-medium mt-2">Overall Pass Rate</div>
+                    </div>
+                    <div class="kpi-card p-6 text-center">
+                        <div class="text-5xl font-bold text-red-600">0</div>
+                        <div class="text-gray-600 font-medium mt-2">Open Critical Defects</div>
+                    </div>
+                    <div class="kpi-card p-6 text-center">
+                        <div class="text-5xl font-bold text-blue-600">100%</div>
+                        <div class="text-gray-600 font-medium mt-2">Performance SLAs Met</div>
+                    </div>
+                    <div class="kpi-card p-6 text-center">
+                        <div class="text-5xl font-bold text-purple-600">92.5%</div>
+                        <div class="text-gray-600 font-medium mt-2">Intent Rec. Accuracy</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-center mb-4">Test Execution Summary</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">A high-level view of test case statuses across the entire testing cycle.</p>
+                        <div class="chart-container" style="height: 300px; max-height: 300px;"><canvas id="executionSummaryChart"></canvas></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-center mb-4">Defect Trend (New vs. Fixed)</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">Tracks the discovery and resolution of defects over the testing period.</p>
+                        <div class="chart-container" style="height: 300px; max-height: 300px;"><canvas id="defectTrendChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="execution" class="tab-content">
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Execution Deep Dive</h2>
+                    <p class="text-gray-600">This section offers a granular look at test execution results. You can analyze the overall test case completion and view a detailed breakdown of functional test performance for each critical integration point, helping to pinpoint areas of strength and those requiring attention.</p>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-sm">
+                    <h3 class="text-xl font-semibold mb-4">Functional Test Results by Integration Point</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 font-semibold">Integration Point</th>
+                                    <th class="p-3 font-semibold text-center">Total Cases</th>
+                                    <th class="p-3 font-semibold text-center">Passed</th>
+                                    <th class="p-3 font-semibold text-center">Failed</th>
+                                    <th class="p-3 font-semibold text-center">Pass Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">CRM System</td>
+                                    <td class="p-3 text-center">250</td>
+                                    <td class="p-3 text-center text-green-600">240</td>
+                                    <td class="p-3 text-center text-red-600">10</td>
+                                    <td class="p-3 text-center font-semibold text-green-600">96.0%</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Knowledge Base</td>
+                                    <td class="p-3 text-center">300</td>
+                                    <td class="p-3 text-center text-green-600">295</td>
+                                    <td class="p-3 text-center text-red-600">5</td>
+                                    <td class="p-3 text-center font-semibold text-green-600">98.3%</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-medium">Ticketing System</td>
+                                    <td class="p-3 text-center">150</td>
+                                    <td class="p-3 text-center text-green-600">142</td>
+                                    <td class="p-3 text-center text-red-600">8</td>
+                                    <td class="p-3 text-center font-semibold text-green-600">94.7%</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-medium">User Interface (Web/App)</td>
+                                    <td class="p-3 text-center">325</td>
+                                    <td class="p-3 text-center text-green-600">305</td>
+                                    <td class="p-3 text-center text-red-600">20</td>
+                                    <td class="p-3 text-center font-semibold text-green-600">93.8%</td>
+                                </tr>
+                                <tr class="bg-gray-50 font-bold">
+                                    <td class="p-3">Overall</td>
+                                    <td class="p-3 text-center">1025</td>
+                                    <td class="p-3 text-center">982</td>
+                                    <td class="p-3 text-center">43</td>
+                                    <td class="p-3 text-center">95.8%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="performance" class="tab-content">
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Performance & AI Model Analysis</h2>
+                    <p class="text-gray-600">This section is for a technical audience, providing insights into the system's non-functional quality. It visualizes key performance metrics like latency and throughput against their service-level agreements (SLAs) and evaluates the core effectiveness of the underlying AI models through standard machine learning metrics.</p>
+                </div>
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-center mb-4">Performance Metrics vs. Targets</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">Average latency for each integration point compared to its target SLA.</p>
+                        <div class="chart-container"><canvas id="performanceMetricsChart"></canvas></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-center mb-4">Core AI Model Performance</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">Key metrics evaluating the effectiveness of the AI's core components.</p>
+                        <div class="chart-container"><canvas id="aiModelMetricsChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="defects" class="tab-content">
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-bold mb-2">Defects & Risks</h2>
+                    <p class="text-gray-600">This section provides full transparency on all identified issues and potential risks. You can review the distribution of defects by severity and explore the key risks—both AI-specific and operational—along with their corresponding mitigation strategies to understand the project's residual risk profile.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold text-center mb-4">Defect Distribution by Severity</h3>
+                        <p class="text-sm text-gray-500 text-center mb-4">A breakdown of all 60 defects found during the testing cycle.</p>
+                        <div class="chart-container"><canvas id="defectDistributionChart"></canvas></div>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold mb-4">Top Critical/Major Defects</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="p-2 font-semibold">ID</th>
+                                        <th class="p-2 font-semibold">Description</th>
+                                        <th class="p-2 font-semibold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b"><td class="p-2 font-mono">ICSA-001</td><td class="p-2">Agent hallucinates order details</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Fixed</span></td></tr>
+                                    <tr class="border-b"><td class="p-2 font-mono">ICSA-002</td><td class="p-2">Incorrect intent for "refund request"</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Fixed</span></td></tr>
+                                    <tr class="border-b"><td class="p-2 font-mono">ICSA-003</td><td class="p-2">High latency from Knowledge Base</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Fixed</span></td></tr>
+                                    <tr class="border-b"><td class="p-2 font-mono">ICSA-004</td><td class="p-2">Fails to escalate in edge cases</td><td class="p-2"><span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Fixed</span></td></tr>
+                                    <tr><td class="p-2 font-mono">ICSA-005</td><td class="p-2">Inconsistent mobile UI formatting</td><td class="p-2"><span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full">Deferred</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 p-6 bg-white rounded-xl shadow-sm">
+                    <h3 class="text-xl font-semibold text-center mb-4">Risk Register</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        <div class="risk-card high kpi-card p-4">
+                            <h4 class="font-bold">Algorithmic Bias</h4>
+                            <p class="text-sm text-gray-600 mt-1">Risk that agent produces prejudiced results. Impact: High (Legal, Reputational). Likelihood: Medium.</p>
+                            <p class="text-sm mt-2"><span class="font-semibold">Mitigation:</span> Bias audits, diverse QA team, human oversight.</p>
+                        </div>
+                        <div class="risk-card high kpi-card p-4">
+                            <h4 class="font-bold">Hallucinations</h4>
+                            <p class="text-sm text-gray-600 mt-1">Agent generates factually incorrect responses. Impact: High (Trust). Likelihood: Medium.</p>
+                            <p class="text-sm mt-2"><span class="font-semibold">Mitigation:</span> Prompt engineering, negative example fine-tuning.</p>
+                        </div>
+                        <div class="risk-card high kpi-card p-4">
+                            <h4 class="font-bold">Performance Drift</h4>
+                            <p class="text-sm text-gray-600 mt-1">Model accuracy degrades over time in production. Impact: High (Effectiveness). Likelihood: Medium.</p>
+                            <p class="text-sm mt-2"><span class="font-semibold">Mitigation:</span> Continuous monitoring, periodic retraining.</p>
+                        </div>
+                        <div class="risk-card low kpi-card p-4">
+                            <h4 class="font-bold">Prompt Injection</h4>
+                            <p class="text-sm text-gray-600 mt-1">Malicious inputs manipulate agent behavior. Impact: High (Security). Likelihood: Low.</p>
+                            <p class="text-sm mt-2"><span class="font-semibold">Mitigation:</span> Input sanitization, context validation.</p>
+                        </div>
+                        <div class="risk-card low kpi-card p-4">
+                            <h4 class="font-bold">Integration Latency</h4>
+                            <p class="text-sm text-gray-600 mt-1">Slow backend responses impact agent speed. Impact: Medium (UX). Likelihood: Low.</p>
+                            <p class="text-sm mt-2"><span class="font-semibold">Mitigation:</span> API optimization, caching.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="signoff" class="tab-content">
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                    <h2 class="text-2xl font-bold mb-2">QA Sign-off & Qualitative Findings</h2>
+                    <p class="text-gray-600">This final section contains the formal QA sign-off for each integration point, serving as the official approval gate for deployment. It also includes qualitative observations from testing, offering deeper context on agent behavior and user experience that numbers alone cannot capture.</p>
+                </div>
+                <div class="p-6 bg-white rounded-xl shadow-sm mb-8">
+                     <h3 class="text-xl font-semibold mb-4">Integration Point Sign-off Checklist</h3>
+                     <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 font-semibold">Integration Point</th>
+                                    <th class="p-3 font-semibold">Sign-off Status</th>
+                                    <th class="p-3 font-semibold">Known Issues</th>
+                                    <th class="p-3 font-semibold">Approver</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b signoff-approved">
+                                    <td class="p-3 font-medium">CRM System</td>
+                                    <td class="p-3 font-semibold text-green-700">Approved</td>
+                                    <td class="p-3 text-sm text-gray-700">None</td>
+                                    <td class="p-3 text-sm text-gray-700">Jane Doe, Product Owner</td>
+                                </tr>
+                                <tr class="border-b signoff-conditional">
+                                    <td class="p-3 font-medium">Knowledge Base</td>
+                                    <td class="p-3 font-semibold text-yellow-700">Conditional Approval</td>
+                                    <td class="p-3 text-sm text-gray-700">Minor latency on complex queries (mitigated by caching).</td>
+                                    <td class="p-3 text-sm text-gray-700">John Smith, Tech Lead</td>
+                                </tr>
+                                 <tr class="border-b signoff-approved">
+                                    <td class="p-3 font-medium">Ticketing System</td>
+                                    <td class="p-3 font-semibold text-green-700">Approved</td>
+                                    <td class="p-3 text-sm text-gray-700">None</td>
+                                    <td class="p-3 text-sm text-gray-700">Alice Brown, QA Manager</td>
+                                </tr>
+                                <tr class="signoff-conditional">
+                                    <td class="p-3 font-medium">User Interface (Web/App)</td>
+                                    <td class="p-3 font-semibold text-yellow-700">Conditional Approval</td>
+                                    <td class="p-3 text-sm text-gray-700">Minor cosmetic formatting issues on older mobile browsers.</td>
+                                    <td class="p-3 text-sm text-gray-700">Jane Doe, Product Owner</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold mb-2">Agent Behavior Insights</h3>
+                        <p class="text-gray-600 text-sm">Demonstrated commendable consistency but showed rare "hallucinations" on ambiguous inputs. Reproducing non-deterministic issues was challenging but explainability tools helped identify root causes in misclassifications.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-xl shadow-sm">
+                        <h3 class="text-xl font-semibold mb-2">Usability Feedback</h3>
+                        <p class="text-gray-600 text-sm">Users found the agent intuitive for common tasks. Feedback from diverse user groups highlighted a need for simpler language to avoid confusion for non-native speakers and better handling of emotionally charged queries.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const chartColors = {
+            blue: 'rgba(59, 130, 246, 0.7)',
+            green: 'rgba(16, 185, 129, 0.7)',
+            red: 'rgba(239, 68, 68, 0.7)',
+            yellow: 'rgba(245, 158, 11, 0.7)',
+            gray: 'rgba(107, 114, 128, 0.7)',
+            teal: 'rgba(20, 184, 166, 0.7)',
+            purple: 'rgba(139, 92, 246, 0.7)',
+            blueBorder: 'rgb(59, 130, 246)',
+            greenBorder: 'rgb(16, 185, 129)',
+            redBorder: 'rgb(239, 68, 68)',
+            yellowBorder: 'rgb(245, 158, 11)',
+            grayBorder: 'rgb(107, 114, 128)',
+            tealBorder: 'rgb(20, 184, 166)',
+            purpleBorder: 'rgb(139, 92, 246)'
+        };
+
+        const chartDefaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    titleFont: { size: 14, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    padding: 10,
+                    cornerRadius: 4
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        font: { size: 12 },
+                        autoSkip: true,
+                        maxRotation: 0,
+                        callback: function(value, index, ticks) {
+                            const label = this.getLabelForValue(value);
+                            if (label.length > 16) {
+                                return label.slice(0, 16) + '...';
+                            }
+                            return label;
+                        }
+                    },
+                    grid: { display: false }
+                },
+                y: {
+                    ticks: { font: { size: 12 } },
+                    grid: { color: '#e5e7eb' },
+                    beginAtZero: true
+                }
+            }
+        };
+
+        function createExecutionSummaryChart() {
+            const ctx = document.getElementById('executionSummaryChart').getContext('2d');
+            const data = {
+                labels: ['Passed', 'Failed', 'Blocked', 'Deferred'],
+                datasets: [{
+                    data: [1150, 60, 15, 25],
+                    backgroundColor: [chartColors.green, chartColors.red, chartColors.yellow, chartColors.gray],
+                    borderColor: [chartColors.greenBorder, chartColors.redBorder, chartColors.yellowBorder, chartColors.grayBorder],
+                    borderWidth: 2
+                }]
+            };
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    ...chartDefaultOptions,
+                    cutout: '60%',
+                     scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        function createDefectTrendChart() {
+            const ctx = document.getElementById('defectTrendChart').getContext('2d');
+            const data = {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                datasets: [{
+                    label: 'New Defects',
+                    data: [15, 25, 10, 8, 2],
+                    borderColor: chartColors.redBorder,
+                    backgroundColor: chartColors.red,
+                    tension: 0.3,
+                    fill: false
+                }, {
+                    label: 'Fixed Defects',
+                    data: [5, 18, 22, 10, 5],
+                    borderColor: chartColors.greenBorder,
+                    backgroundColor: chartColors.green,
+                    tension: 0.3,
+                    fill: false
+                }]
+            };
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: chartDefaultOptions
+            });
+        }
+        
+        function createPerformanceMetricsChart() {
+            const ctx = document.getElementById('performanceMetricsChart').getContext('2d');
+            const data = {
+                labels: ['CRM System', 'Knowledge Base', 'Ticketing System', 'AI Inference'],
+                datasets: [{
+                    label: 'Achieved Latency (ms)',
+                    data: [250, 180, 320, 150],
+                    backgroundColor: chartColors.blue,
+                    borderColor: chartColors.blueBorder,
+                    borderWidth: 1
+                }, {
+                    label: 'Target Latency (ms)',
+                    data: [300, 200, 350, 200],
+                    backgroundColor: chartColors.gray,
+                    borderColor: chartColors.grayBorder,
+                    borderWidth: 1
+                }]
+            };
+            new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: { ...chartDefaultOptions, indexAxis: 'y' }
+            });
+        }
+
+        function createAiModelMetricsChart() {
+            const ctx = document.getElementById('aiModelMetricsChart').getContext('2d');
+            const data = {
+                labels: ['Intent Accuracy', 'Intent F1-Score', 'Entity Precision', 'Entity Recall'],
+                datasets: [{
+                    label: 'Achieved Value (%)',
+                    data: [92.5, 91, 90.1, 88.5],
+                    backgroundColor: chartColors.purple,
+                    borderColor: chartColors.purpleBorder,
+                    borderWidth: 1
+                }, {
+                    label: 'Target Value (%)',
+                    data: [90, 90, 88, 87],
+                    backgroundColor: chartColors.gray,
+                    borderColor: chartColors.grayBorder,
+                    borderWidth: 1
+                }]
+            };
+             new Chart(ctx, {
+                type: 'bar',
+                data: data,
+                options: { ...chartDefaultOptions, indexAxis: 'y', scales: { ...chartDefaultOptions.scales, x: { ...chartDefaultOptions.scales.x, suggestedMin: 85, suggestedMax: 100 } } }
+            });
+        }
+
+        function createDefectDistributionChart() {
+            const ctx = document.getElementById('defectDistributionChart').getContext('2d');
+            const data = {
+                labels: ['Critical', 'Major', 'Minor', 'Cosmetic'],
+                datasets: [{
+                    label: 'Defect Count',
+                    data: [2, 13, 33, 12],
+                    backgroundColor: [chartColors.red, chartColors.yellow, chartColors.blue, chartColors.gray],
+                    borderColor: [chartColors.redBorder, chartColors.yellowBorder, chartColors.blueBorder, chartColors.grayBorder],
+                    borderWidth: 1
+                }]
+            };
+            new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                 options: {
+                    ...chartDefaultOptions,
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+        
+        createExecutionSummaryChart();
+        createDefectTrendChart();
+        createPerformanceMetricsChart();
+        createAiModelMetricsChart();
+        createDefectDistributionChart();
+        
+        const tabs = document.querySelectorAll('.nav-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => item.classList.remove('active'));
+                tab.classList.add('active');
+
+                const target = tab.getAttribute('data-tab');
+                tabContents.forEach(content => {
+                    if (content.id === target) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+    });
+</script>
+
+</body>
+</html>
